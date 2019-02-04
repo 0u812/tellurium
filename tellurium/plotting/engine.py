@@ -71,7 +71,7 @@ class PlottingEngine(object):
         fig = self.newFigure()
 
         for k in range(1, m.shape[1]):
-            fig.addXYDataset(m[:,0], m[:,k], name=m.colnames[k], tag=tag, alpha=alpha)
+            fig.addXYDataset(m[:,0], m[:,k], name=m.colnames[k], tag=tag, alpha=alpha, **kwargs)
 
         return fig
 
@@ -97,16 +97,16 @@ class PlottingEngine(object):
     def plot_text(self, x, y, text, show=True, **kwargs):
         return self.plot(x, y, text=text, show=show, **kwargs)
 
-    def plotTimecourse(self, m, xtitle=None, ytitle=None, title=None, linewidth=2, xlim=None, ylim=None, 
-                       logx=False, logy=False, xscale='linear', yscale='linear', grid=False, ordinates=None, 
-                       tag=None, labels=None, figsize=(6,4), savefig=None, dpi=80, alpha=1.0, **kwargs):
+    def plotTimecourse(self, m, xtitle=None, ytitle=None, title=None, linewidth=2, xlim=None, ylim=None,
+                       logx=False, logy=False, xscale='linear', yscale='linear', grid=False, ordinates=None,
+                       tag=None, labels=None, figsize=(6,4), savefig=None, dpi=80, alpha=1.0, color=None, **kwargs):
         """ Plots a timecourse from a simulation.
 
         :param m: An array returned by RoadRunner.simulate.
         """
-        fig = self.figureFromTimecourse(m, title=title, ordinates=ordinates, tag=tag, 
-                                        alpha=alpha, xlim=xlim, ylim=ylim)
-                                        
+        fig = self.figureFromTimecourse(m, title=title, ordinates=ordinates, tag=tag,
+                                        alpha=alpha, xlim=xlim, ylim=ylim, color=color)
+
         if xtitle:
             fig.xtitle = xtitle
         if ytitle:
@@ -142,13 +142,13 @@ class PlottingEngine(object):
         if dpi:
             fig.dpi = dpi
         if alpha:
-            fig.alpha = alpha 
-            
+            fig.alpha = alpha
+
         fig.render()
 
-    def accumulateTimecourse(self, m, xtitle=None, ytitle=None, title=None, linewidth=2, xlim=None, ylim=None, 
-                             logx=False, logy=False, xscale='linear', yscale='linear', grid=False, ordinates=None, 
-                             tag=None, labels=None, figsize=(6,4), savefig=None, dpi=80, alpha=1.0, **kwargs):
+    def accumulateTimecourse(self, m, xtitle=None, ytitle=None, title=None, linewidth=2, xlim=None, ylim=None,
+                             logx=False, logy=False, xscale='linear', yscale='linear', grid=False, ordinates=None,
+                             tag=None, labels=None, figsize=(6,4), savefig=None, dpi=80, alpha=1.0, color=None, **kwargs):
         """ Accumulates the traces instead of plotting (like matplotlib with show=False).
         Call show() to show the plot.
 
@@ -162,7 +162,7 @@ class PlottingEngine(object):
 
         for k in range(1,m.shape[1]):
             t = tag if tag else m.colnames[k]
-            self.fig.addXYDataset(m[:,0], m[:, k], name=m.colnames[k], tag=t, alpha=alpha)
+            self.fig.addXYDataset(m[:,0], m[:, k], name=m.colnames[k], tag=t, alpha=alpha, color=color)
 
         if xtitle:
             self.fig.xtitle = xtitle
@@ -196,8 +196,8 @@ class PlottingEngine(object):
             self.fig.savefig = savefig
         if dpi:
             self.fig.dpi = dpi
-            
-            
+
+
     def show(self, reset=True):
         """ Shows the traces accummulated from accumulateTimecourse.
 
@@ -319,7 +319,7 @@ class PlottingFigure(object):
             self.getMergedTaggedDatasets(),
             (dataset for dataset in self.xy_datasets if not 'tag' in dataset))
 
-    def plot(self, x, y, colnames=None, title=None, xtitle=None, logx=None, logy=None, ytitle=None, alpha=None, name=None, names=None, tag=None, tags=None, scatter=None, error_y_pos=None, error_y_neg=None, showlegend=None, label=None, labels=None, text=None, dash=None, color=None):
+    def plot(self, x, y, colnames=None, title=None, xtitle=None, logx=None, logy=None, ytitle=None, alpha=None, name=None, names=None, tag=None, tags=None, scatter=None, error_y_pos=None, error_y_neg=None, showlegend=None, label=None, labels=None, text=None, dash=None, colors=None):
         """ Plot x & y data.
         """
         if xtitle:
@@ -361,8 +361,8 @@ class PlottingFigure(object):
                     kws['text'] = text
                 if dash is not None:
                     kws['dash'] = dash[k]
-                if color is not None:
-                    kws['color'] = color[k]
+                if colors is not None:
+                    kws['color'] = colors[k]
                 if alpha is not None:
                     kws['alpha'] = alpha[k]
                 self.addXYDataset(x, y[:, k], **kws)
@@ -389,8 +389,8 @@ class PlottingFigure(object):
                 kws['text'] = text
             if dash is not None:
                 kws['dash'] = dash[0]
-            if color is not None:
-                kws['color'] = color[0]
+            if colors is not None:
+                kws['color'] = colors[0]
             if alpha is not None:
                 kws['alpha'] = alpha[0]
             self.addXYDataset(x, y, **kws)

@@ -44,6 +44,12 @@ class PlotlyFigure(PlottingFigure):
         kwargs = {}
         kwargs['mode'] = 'lines'
 
+        # def merge_kwargs(key,v):
+        #     if not key in kwargs:
+        #         kwargs[key] = v
+        #     else:
+        #         kwargs[key].update(v)
+
         if 'name' in dataset and dataset['name'] is not None:
             kwargs['name'] = dataset['name']
         else:
@@ -58,13 +64,18 @@ class PlotlyFigure(PlottingFigure):
             kwargs['textposition'] = 'bottom center'
             kwargs['mode'] = 'markers+text'
             kwargs['marker']=Marker(color='black')
-        if 'color' in dataset and dataset['color'] is not None:
-            kwargs['marker']=Marker(color=dataset['color'])
+        # if 'color' in dataset and dataset['color'] is not None:
+            # kwargs['marker']=Marker(color=dataset['color'])
+        if 'color' in dataset and dataset['color'] is not None and type(dataset['color']) == tuple:
+            kwargs['line'] = kwargs.get('line', {})
+            kwargs['line'].update({
+                'color': ('rgb({:d}, {:d}, {:d})'.format(*tuple(int(255*x) for x in dataset['color'])))
+                })
         # lines/markers (lines by default)
         if 'mode' in dataset and dataset['mode'] is not None:
             kwargs['mode'] = dataset['mode']
         if 'dash' in dataset and dataset['dash'] is not None:
-            kwargs['line'] = {'dash': dataset['dash']}
+            kwargs.get('line', {}).update({'dash': dataset['dash']})
         # override mode via scatter
         if 'scatter' in dataset and dataset['scatter'] == True:
             kwargs['mode'] = 'markers'
