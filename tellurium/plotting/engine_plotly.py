@@ -75,7 +75,8 @@ class PlotlyFigure(PlottingFigure):
         if 'mode' in dataset and dataset['mode'] is not None:
             kwargs['mode'] = dataset['mode']
         if 'dash' in dataset and dataset['dash'] is not None:
-            kwargs.get('line', {}).update({'dash': dataset['dash']})
+            kwargs['line'] = kwargs.get('line', {})
+            kwargs['line'].update({'dash': dataset['dash']})
         # override mode via scatter
         if 'scatter' in dataset and dataset['scatter'] == True:
             kwargs['mode'] = 'markers'
