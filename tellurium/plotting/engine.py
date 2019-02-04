@@ -319,7 +319,7 @@ class PlottingFigure(object):
             self.getMergedTaggedDatasets(),
             (dataset for dataset in self.xy_datasets if not 'tag' in dataset))
 
-    def plot(self, x, y, colnames=None, title=None, xtitle=None, logx=None, logy=None, ytitle=None, alpha=None, name=None, names=None, tag=None, tags=None, scatter=None, error_y_pos=None, error_y_neg=None, showlegend=None, label=None, labels=None, text=None, dash=None, colors=None):
+    def plot(self, x, y, colnames=None, title=None, xtitle=None, logx=None, logy=None, ytitle=None, alpha=None, name=None, names=None, tag=None, tags=None, scatter=None, error_y_pos=None, error_y_neg=None, showlegend=None, label=None, labels=None, text=None, dash=None, color=None, colors=None):
         """ Plot x & y data.
         """
         if xtitle:
@@ -363,6 +363,8 @@ class PlottingFigure(object):
                     kws['dash'] = dash[k]
                 if colors is not None:
                     kws['color'] = colors[k]
+                if color is not None:
+                    raise RuntimeError('Please specify colors as a sequence of values when plotting multiple traces')
                 if alpha is not None:
                     kws['alpha'] = alpha[k]
                 self.addXYDataset(x, y[:, k], **kws)
@@ -390,7 +392,14 @@ class PlottingFigure(object):
             if dash is not None:
                 kws['dash'] = dash[0]
             if colors is not None:
-                kws['color'] = colors[0]
+                if len(colors) == 1:
+                    kws['color'] = colors[0]
+                else:
+                    raise RuntimeError('Received a sequence of colors but only plotting a single trace. Use singular color argument instead.')
+            if color is not None:
+                if colors is not None:
+                    raise RuntimeError('Specify colors or color, not both')
+                kws['color'] = color
             if alpha is not None:
                 kws['alpha'] = alpha[0]
             self.addXYDataset(x, y, **kws)

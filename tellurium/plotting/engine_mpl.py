@@ -39,8 +39,8 @@ class MatplotlibEngine(PlottingEngine):
 class MatplotlibFigure(PlottingFigure):
     """ MatplotlibFigure. """
 
-    def __init__(self, layout=PlottingLayout(), use_legend=True, xtitle=None, ytitle=None, title=None, 
-                 linewidth=None, xlim=None, ylim=None, logx=None, logy=None, xscale=None, yscale=None, 
+    def __init__(self, layout=PlottingLayout(), use_legend=True, xtitle=None, ytitle=None, title=None,
+                 linewidth=None, xlim=None, ylim=None, logx=None, logy=None, xscale=None, yscale=None,
                  grid=None, ordinates=None, tag=None, labels=None, figsize=(9,6), savefig=None, dpi=None):
         super(MatplotlibFigure, self).__init__(title=title, layout=layout,
                                                xtitle=xtitle, ytitle=ytitle, logx=logx, logy=logy)
@@ -72,8 +72,8 @@ class MatplotlibFigure(PlottingFigure):
                 kwargs['alpha'] = dataset['alpha']
             if 'showlegend' in dataset and dataset['showlegend'] is not None:
                 show_legend = dataset['showlegend']
-            if 'color' in dataset and dataset['color'] is not None:
-                kwargs['color'] = dataset['color']
+            if 'color' in dataset and dataset['color'] is not None and type(dataset['color']) == tuple:
+                kwargs['color'] = kwargs['color']
             scatter = False
             marker = ''
             if 'mode' in dataset and dataset['mode'] is not None:
@@ -115,11 +115,11 @@ class MatplotlibFigure(PlottingFigure):
             ax.set_yscale('log')
         elif self.yscale != None:
             ax.set_yscale(self.yscale)
-            
+
         # grid
         if self.grid:
             ax.grid(linestyle='dotted', alpha=0.8)
-            
+
         # TODO: implement ordinates, tags & labels
 
         # legend
@@ -127,8 +127,6 @@ class MatplotlibFigure(PlottingFigure):
             if not IPYTHON:
                 legend = plt.legend()
             else:
-                # legend = plt.legend(bbox_to_anchor=(1.0, 0.5), loc='center left', borderaxespad=1.)
-                # legend = plt.legend(bbox_to_anchor=(0.0, 1.02, 1., .102), ncol=2, loc='best', borderaxespad=0.)
                 legend = plt.legend(ncol=1, loc='best', borderaxespad=0.)
             # legend.draw_frame(False)
             legend.draw_frame(True)
@@ -145,60 +143,3 @@ class MatplotlibFigure(PlottingFigure):
     def save(self, filename, format):
         fig = self.render()
         fig.savefig(filename, format=format)
-
-
-# FIXME: integrate old code
-# Old code:
-# if loc is False:
-#     loc = None
-#
-# if 'linewidth' not in kwargs:
-#     kwargs['linewidth'] = 2.0
-#
-# # get the names
-# names = result.dtype.names
-# if names is None:
-#     names = self.selections
-#
-# # check if set_prop_cycle is supported
-# if hasattr(plt.gca(), 'set_prop_cycle'):
-#     # reset color cycle (repeated simulations have the same colors)
-#     plt.gca().set_prop_cycle(None)
-#
-# # make plot
-# Ncol = result.shape[1]
-# if len(names) != Ncol:
-#     raise Exception('Legend names must match result array')
-# for k in range(1, Ncol):
-#     if loc is None:
-#         # no labels if no legend
-#         plt.plot(result[:, 0], result[:, k], **kwargs)
-#     else:
-#         plt.plot(result[:, 0], result[:, k], label=names[k], **kwargs)
-#
-#     cmap = plt.get_cmap('Blues')
-#
-# # labels
-# if xlabel is None:
-#     xlabel = names[0]
-# plt.xlabel(xlabel)
-# if ylabel is not None:
-#     plt.ylabel(ylabel)
-# if title is not None:
-#     plt.title(title)
-# if xlim is not None:
-#     plt.xlim(xlim)
-# if ylim is not None:
-#     plt.ylim(ylim)
-# # axis and grids
-# plt.xscale(xscale)
-# plt.yscale(yscale)
-# plt.grid(grid)
-#
-# # show legend
-# if loc is not None:
-#     plt.legend(loc=loc)
-# # show plot
-# if show:
-#     plt.show()
-# return plt
